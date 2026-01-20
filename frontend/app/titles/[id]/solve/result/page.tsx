@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Question } from '@/lib/api';
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Question } from "@/lib/api";
 
 interface ResultData {
   question: Question;
@@ -24,9 +24,9 @@ export default function ResultPage() {
   const [resultData, setResultData] = useState<ResultData | null>(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
-    const data = sessionStorage.getItem('quizResult');
+    const data = sessionStorage.getItem("quizResult");
     if (!data) {
       router.push(`/titles/${titleId}/solve`);
       return;
@@ -42,17 +42,19 @@ export default function ResultPage() {
 
   const handleNext = () => {
     // sessionStorageをクリーンアップ
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('quizResult');
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("quizResult");
 
-      if (!resultData?.isLastQuestion) {
-        // 次の問題インデックスを保存
-        sessionStorage.setItem('currentQuestionIndex', String(resultData.currentIndex + 1));
+      if (resultData && !resultData.isLastQuestion) {
+        sessionStorage.setItem(
+          "currentQuestionIndex",
+          String(resultData.currentIndex + 1)
+        );
       }
     }
 
     if (resultData?.isLastQuestion) {
-      router.push('/titles');
+      router.push("/titles");
     } else {
       router.push(`/titles/${titleId}/solve`);
     }
@@ -66,17 +68,25 @@ export default function ResultPage() {
     );
   }
 
-  const { question, selectedChoiceIds, isCorrect, explanation, correctChoiceIds } = resultData;
+  const {
+    question,
+    selectedChoiceIds,
+    isCorrect,
+    explanation,
+    correctChoiceIds,
+  } = resultData;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto space-y-6">
           {/* 結果ヘッダー */}
-          <Card className={isCorrect ? 'border-green-500' : 'border-red-500'}>
+          <Card className={isCorrect ? "border-green-500" : "border-red-500"}>
             <CardHeader>
-              <CardTitle className={isCorrect ? 'text-green-600' : 'text-red-600'}>
-                {isCorrect ? '✓ 正解' : '✗ 不正解'}
+              <CardTitle
+                className={isCorrect ? "text-green-600" : "text-red-600"}
+              >
+                {isCorrect ? "✓ 正解" : "✗ 不正解"}
               </CardTitle>
             </CardHeader>
           </Card>
@@ -89,7 +99,8 @@ export default function ResultPage() {
             <CardContent>
               <p className="text-lg whitespace-pre-wrap">{question.text}</p>
               <p className="text-sm text-gray-600 mt-2">
-                ({question.question_type === 'single' ? '単一選択' : '複数選択'})
+                ({question.question_type === "single" ? "単一選択" : "複数選択"}
+                )
               </p>
             </CardContent>
           </Card>
@@ -104,22 +115,22 @@ export default function ResultPage() {
                 const isSelected = selectedChoiceIds.includes(choice.id);
                 const isCorrectChoice = correctChoiceIds.includes(choice.id);
 
-                let bgColor = '';
-                let borderColor = 'border-gray-200';
-                let label = '';
+                let bgColor = "";
+                let borderColor = "border-gray-200";
+                let label = "";
 
                 if (isCorrectChoice && isSelected) {
-                  bgColor = 'bg-green-50';
-                  borderColor = 'border-green-500';
-                  label = '正解（あなたの回答）';
+                  bgColor = "bg-green-50";
+                  borderColor = "border-green-500";
+                  label = "正解（あなたの回答）";
                 } else if (isCorrectChoice) {
-                  bgColor = 'bg-green-50';
-                  borderColor = 'border-green-500';
-                  label = '正解';
+                  bgColor = "bg-green-50";
+                  borderColor = "border-green-500";
+                  label = "正解";
                 } else if (isSelected) {
-                  bgColor = 'bg-red-50';
-                  borderColor = 'border-red-500';
-                  label = 'あなたの回答';
+                  bgColor = "bg-red-50";
+                  borderColor = "border-red-500";
+                  label = "あなたの回答";
                 }
 
                 return (
@@ -132,7 +143,9 @@ export default function ResultPage() {
                       {label && (
                         <span
                           className={`text-xs font-semibold px-2 py-1 rounded ${
-                            isCorrectChoice ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+                            isCorrectChoice
+                              ? "bg-green-600 text-white"
+                              : "bg-red-600 text-white"
                           }`}
                         >
                           {label}
@@ -160,7 +173,7 @@ export default function ResultPage() {
           {/* 次へボタン */}
           <div className="flex gap-4">
             <Button onClick={handleNext} className="w-full" size="lg">
-              {resultData.isLastQuestion ? '完了' : '次の問題へ'}
+              {resultData.isLastQuestion ? "完了" : "次の問題へ"}
             </Button>
           </div>
 
