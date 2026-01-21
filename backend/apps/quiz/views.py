@@ -25,11 +25,20 @@ class TitleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """公開タイトル + 自分のタイトルを取得"""
         if self.request.user.is_authenticated:
-            return Title.objects.filter(
+            queryset = Title.objects.filter(
                 Q(status=Title.PUBLIC) | Q(owner=self.request.user)
             ).distinct()
         else:
-            return Title.objects.filter(status=Title.PUBLIC)
+            queryset = Title.objects.filter(status=Title.PUBLIC)
+
+        # 検索機能
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) | Q(description__icontains=search)
+            )
+
+        return queryset
 
     def get_serializer_class(self):
         """アクションに応じてシリアライザを切り替え"""

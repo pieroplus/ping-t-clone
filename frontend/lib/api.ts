@@ -127,8 +127,17 @@ export interface TitlesResponse {
   results: Title[];
 }
 
-export async function getTitles(page: number = 1, pageSize: number = 20): Promise<TitlesResponse> {
-  return apiRequest<TitlesResponse>(`/api/quiz/titles/?page=${page}&page_size=${pageSize}`);
+export async function getTitles(page: number = 1, pageSize: number = 20, search?: string): Promise<TitlesResponse> {
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(pageSize),
+  });
+
+  if (search) {
+    params.append('search', search);
+  }
+
+  return apiRequest<TitlesResponse>(`/api/quiz/titles/?${params.toString()}`);
 }
 
 export async function getTitle(id: number): Promise<Title> {

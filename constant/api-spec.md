@@ -123,7 +123,10 @@ Authorization: Bearer <access_token>
 
 #### `GET /api/quiz/titles/`
 - **権限**: 匿名OK（公開のみ）、ログイン時は自分のも含む
-- **Query**: `?page=2&page_size=30` (10-50、デフォルト20)
+- **Query**:
+  - `?page=2&page_size=30` (10-50、デフォルト20)
+  - `?search=keyword` (タイトル名または説明文で部分一致検索)
+  - 例: `?page=1&page_size=20&search=AWS`
 - **Response**:
 ```json
 {
@@ -360,6 +363,7 @@ Authorization: Bearer <access_token>
 - ✅ ランダムモード（`?random=true`）
 - ✅ 日本語エラーメッセージ
 - ✅ 採点API（`POST /api/quiz/questions/{id}/check/`）
+- ✅ タイトル検索機能（`?search=keyword`）
 
 ## 今後の検討事項
 

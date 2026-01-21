@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -18,15 +19,33 @@ export default function TitlesPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // 検索クエリのデバウンス処理（1秒後に実行）
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setPage(1); // 検索時はページを1にリセット
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     loadTitles();
-  }, [page]);
+    // ログイン状態を確認
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('access_token');
+      setIsLoggedIn(!!token);
+    }
+  }, [page, debouncedSearch]);
 
   const loadTitles = async () => {
     setLoading(true);
     try {
-      const response = await getTitles(page, pageSize);
+      const response = await getTitles(page, pageSize, debouncedSearch || undefined);
       setTitles(response.results);
       setCount(response.count);
     } catch (error) {
@@ -41,15 +60,35 @@ export default function TitlesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">タイトル一覧</h1>
-          <Link href="/titles/new">
-            <Button>新規作成</Button>
-          </Link>
+        <div className="mb-8 space-y-4">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold">タイトル一覧</h1>
+            {isLoggedIn && (
+              <Link href="/titles/new">
+                <Button>新規作成</Button>
+              </Link>
+            )}
+          </div>
+
+          <div className="max-w-md">
+            <Input
+              type="text"
+              placeholder="タイトルを検索..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full"
+            />
+          </div>
         </div>
 
         {loading ? (
           <div className="text-center py-8">読み込み中...</div>
+        ) : titles.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            {debouncedSearch
+              ? `「${debouncedSearch}」に一致するタイトルが見つかりませんでした`
+              : "タイトルがまだありません"}
+          </div>
         ) : (
           <>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
