@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getTitles, Title } from "@/lib/api";
+import { getTitles, Title, getTitleFavorites } from "@/lib/api";
 
 export default function TitlesPage() {
   const [titles, setTitles] = useState<Title[]>([]);
@@ -22,6 +22,8 @@ export default function TitlesPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [favoriteTitleIds, setFavoriteTitleIds] = useState<number[]>([]);
 
   // 検索クエリのデバウンス処理（1秒後に実行）
   useEffect(() => {
@@ -34,25 +36,56 @@ export default function TitlesPage() {
   }, [searchQuery]);
 
   useEffect(() => {
-    loadTitles();
     // ログイン状態を確認
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('access_token');
       setIsLoggedIn(!!token);
     }
-  }, [page, debouncedSearch]);
+    loadFavorites();
+  }, []);
+
+  useEffect(() => {
+    loadTitles();
+  }, [page, debouncedSearch, showFavoritesOnly, favoriteTitleIds]);
+
+  const loadFavorites = async () => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    if (!token) return;
+
+    try {
+      const favorites = await getTitleFavorites();
+      setFavoriteTitleIds(favorites.map(f => f.title.id));
+    } catch (error) {
+      console.error("Failed to load favorites:", error);
+    }
+  };
 
   const loadTitles = async () => {
     setLoading(true);
     try {
       const response = await getTitles(page, pageSize, debouncedSearch || undefined);
-      setTitles(response.results);
-      setCount(response.count);
+
+      // お気に入りフィルターが有効な場合はフィルタリング
+      if (showFavoritesOnly && isLoggedIn) {
+        const filteredTitles = response.results.filter(title =>
+          favoriteTitleIds.includes(title.id)
+        );
+        setTitles(filteredTitles);
+        setCount(filteredTitles.length);
+      } else {
+        setTitles(response.results);
+        setCount(response.count);
+      }
     } catch (error) {
       console.error("Failed to load titles:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleToggleFavoritesFilter = () => {
+    setShowFavoritesOnly(!showFavoritesOnly);
+    setPage(1); // フィルター変更時はページを1にリセット
   };
 
   const totalPages = Math.ceil(count / pageSize);
@@ -70,14 +103,24 @@ export default function TitlesPage() {
             )}
           </div>
 
-          <div className="max-w-md">
-            <Input
-              type="text"
-              placeholder="タイトルを検索..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full"
-            />
+          <div className="flex gap-4 items-center">
+            <div className="flex-1 max-w-md">
+              <Input
+                type="text"
+                placeholder="タイトルを検索..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            {isLoggedIn && (
+              <Button
+                variant={showFavoritesOnly ? "default" : "outline"}
+                onClick={handleToggleFavoritesFilter}
+              >
+                {showFavoritesOnly ? "★ お気に入りのみ" : "☆ 全て"}
+              </Button>
+            )}
           </div>
         </div>
 

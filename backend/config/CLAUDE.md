@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-QuizHub Backend - 問題集・クイズサービスのバックエンドAPI
+QuizHubClone Backend - 問題集・クイズサービスのバックエンドAPI
 
 ## プロジェクト構成
 

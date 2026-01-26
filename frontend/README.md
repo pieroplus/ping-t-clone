@@ -1,4 +1,4 @@
-# Ping-T Clone Frontend (Phase A)
+# QuizHub Frontend (Phase A)
 
 Next.js (App Router) + TypeScript + Tailwind CSS + shadcn/ui で構築したクイズアプリケーションのフロントエンド
 
@@ -76,14 +76,14 @@ npm run dev
 
 ### URL一覧
 
-| 画面 | URL | 必要な権限 |
-|------|-----|-----------|
-| タイトル作成 | `/titles/new` | 認証必須 |
-| タイトル編集 | `/titles/[id]/edit` | 所有者のみ |
-| タイトル削除 | `/titles/[id]/edit` (削除ボタン) | 所有者のみ |
-| 問題作成 | `/titles/[id]/questions/new` | タイトル所有者のみ |
-| 問題編集 | `/titles/[id]/questions/[qid]/edit` | タイトル所有者のみ |
-| 問題削除 | `/titles/[id]/edit` または `/titles/[id]/questions/[qid]/edit` | タイトル所有者のみ |
+| 画面         | URL                                                            | 必要な権限         |
+| ------------ | -------------------------------------------------------------- | ------------------ |
+| タイトル作成 | `/titles/new`                                                  | 認証必須           |
+| タイトル編集 | `/titles/[id]/edit`                                            | 所有者のみ         |
+| タイトル削除 | `/titles/[id]/edit` (削除ボタン)                               | 所有者のみ         |
+| 問題作成     | `/titles/[id]/questions/new`                                   | タイトル所有者のみ |
+| 問題編集     | `/titles/[id]/questions/[qid]/edit`                            | タイトル所有者のみ |
+| 問題削除     | `/titles/[id]/edit` または `/titles/[id]/questions/[qid]/edit` | タイトル所有者のみ |
 
 ### 権限について
 

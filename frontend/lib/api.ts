@@ -263,4 +263,142 @@ export async function deleteQuestion(id: number): Promise<void> {
   });
 }
 
+// Question Notes
+export interface QuestionNote {
+  id: number;
+  user?: User;
+  question: {
+    id: number;
+    title: number; // title_id
+    text: string;
+    explanation?: string;
+    question_type: 'single' | 'multiple';
+    order: number;
+    choices: Choice[];
+    created_at?: string;
+    updated_at?: string;
+  };
+  note: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface NoteRequest {
+  note: string;
+}
+
+export async function getQuestionNote(questionId: number): Promise<QuestionNote> {
+  return apiRequest<QuestionNote>(`/api/quiz/questions/${questionId}/note/`);
+}
+
+export async function createQuestionNote(questionId: number, data: NoteRequest): Promise<QuestionNote> {
+  return apiRequest<QuestionNote>(`/api/quiz/questions/${questionId}/note/`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateQuestionNote(questionId: number, data: NoteRequest): Promise<QuestionNote> {
+  return apiRequest<QuestionNote>(`/api/quiz/questions/${questionId}/note/`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteQuestionNote(questionId: number): Promise<void> {
+  return apiRequest<void>(`/api/quiz/questions/${questionId}/note/`, {
+    method: 'DELETE',
+  });
+}
+
+export interface NotesResponse {
+  count: number;
+  results: QuestionNote[];
+}
+
+export async function getAllNotes(): Promise<QuestionNote[]> {
+  const response = await apiRequest<QuestionNote[] | NotesResponse>('/api/quiz/notes/');
+  // ページネーション形式か配列形式かを判定
+  if (Array.isArray(response)) {
+    return response;
+  }
+  return response.results;
+}
+
+// Title Favorites
+export interface TitleFavorite {
+  id: number;
+  user?: User;
+  title: Title;
+  created_at?: string;
+}
+
+export interface TitleFavoriteRequest {
+  title_id: number;
+}
+
+export interface TitleFavoritesResponse {
+  count: number;
+  results: TitleFavorite[];
+}
+
+export async function getTitleFavorites(): Promise<TitleFavorite[]> {
+  const response = await apiRequest<TitleFavorite[] | TitleFavoritesResponse>('/api/quiz/favorites/titles/');
+  if (Array.isArray(response)) {
+    return response;
+  }
+  return response.results;
+}
+
+export async function addTitleFavorite(titleId: number): Promise<TitleFavorite> {
+  return apiRequest<TitleFavorite>('/api/quiz/favorites/titles/', {
+    method: 'POST',
+    body: JSON.stringify({ title_id: titleId }),
+  });
+}
+
+export async function removeTitleFavorite(favoriteId: number): Promise<void> {
+  return apiRequest<void>(`/api/quiz/favorites/titles/${favoriteId}/`, {
+    method: 'DELETE',
+  });
+}
+
+// Question Favorites
+export interface QuestionFavorite {
+  id: number;
+  user?: User;
+  question: Question;
+  created_at?: string;
+}
+
+export interface QuestionFavoriteRequest {
+  question_id: number;
+}
+
+export interface QuestionFavoritesResponse {
+  count: number;
+  results: QuestionFavorite[];
+}
+
+export async function getQuestionFavorites(): Promise<QuestionFavorite[]> {
+  const response = await apiRequest<QuestionFavorite[] | QuestionFavoritesResponse>('/api/quiz/favorites/questions/');
+  if (Array.isArray(response)) {
+    return response;
+  }
+  return response.results;
+}
+
+export async function addQuestionFavorite(questionId: number): Promise<QuestionFavorite> {
+  return apiRequest<QuestionFavorite>('/api/quiz/favorites/questions/', {
+    method: 'POST',
+    body: JSON.stringify({ question_id: questionId }),
+  });
+}
+
+export async function removeQuestionFavorite(favoriteId: number): Promise<void> {
+  return apiRequest<void>(`/api/quiz/favorites/questions/${favoriteId}/`, {
+    method: 'DELETE',
+  });
+}
+
 export { ApiError };

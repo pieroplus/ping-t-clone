@@ -1,13 +1,16 @@
 # プロジェクト概要
 
 ## プロジェクト名
-Ping-T Clone Frontend (Phase A)
+
+QuizHub Frontend (Phase A)
 
 ## 目的
+
 Ping-Tのクローンとして構築されたクイズアプリケーションのフロントエンド。
 ユーザーが登録・ログインして、公開されたクイズタイトルを閲覧し、問題を解くことができる。
 
 ## 主な機能 (Phase A)
+
 1. **ユーザー認証**
    - ユーザー登録 (`/auth/register`)
    - ログイン (`/auth/login`)
@@ -25,9 +28,11 @@ Ping-Tのクローンとして構築されたクイズアプリケーション�
    - 解説表示
 
 ## バックエンドAPI
+
 - ベースURL: `http://localhost:8000` (環境変数 `NEXT_PUBLIC_API_BASE_URL` で設定)
 - JWT認証を使用
 - 詳細は `../constant/api-spec.md` を参照
 
 ## 今後の予定
+
 - Phase B: お気に入り機能、評価機能、問題メモ機能

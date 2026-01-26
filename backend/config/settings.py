@@ -219,8 +219,8 @@ CORS_ALLOW_CREDENTIALS = True
 # https://drf-spectacular.readthedocs.io/en/latest/settings.html
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Ping-T Clone API',
-    'DESCRIPTION': 'API for a quiz/question bank service similar to Ping-T',
+    'TITLE': 'PQuizHub API',
+    'DESCRIPTION': 'API for a quiz/question bank service similar to QuizHub',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,

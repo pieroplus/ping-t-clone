@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useToast } from '@/components/ui/use-toast';
+} from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Header() {
   const [username, setUsername] = useState<string | null>(null);
@@ -19,28 +19,28 @@ export default function Header() {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedUsername = localStorage.getItem('username');
-      const token = localStorage.getItem('access_token');
+    if (typeof window !== "undefined") {
+      const storedUsername = localStorage.getItem("username");
+      const token = localStorage.getItem("access_token");
       setUsername(storedUsername && token ? storedUsername : null);
     }
   }, [pathname]);
 
   const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('username');
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("username");
     setUsername(null);
 
     toast({
-      title: 'ログアウトしました',
-      description: 'ログイン画面に移動します',
+      title: "ログアウトしました",
+      description: "ログイン画面に移動します",
     });
 
-    router.push('/auth/login');
+    router.push("/auth/login");
   };
 
-  const isAuthPage = pathname?.startsWith('/auth');
+  const isAuthPage = pathname?.startsWith("/auth");
 
   if (isAuthPage) {
     return null;
@@ -51,10 +51,20 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <Link href="/titles">
-            <h1 className="text-xl font-bold cursor-pointer">Ping-T Clone</h1>
+            <h1 className="text-xl font-bold cursor-pointer">QuizHub</h1>
           </Link>
 
-          <div>
+          <div className="flex items-center gap-4">
+            {username && (
+              <>
+                <Link href="/favorites">
+                  <Button variant="ghost">お気に入り</Button>
+                </Link>
+                <Link href="/notes">
+                  <Button variant="ghost">マイメモ</Button>
+                </Link>
+              </>
+            )}
             {username ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

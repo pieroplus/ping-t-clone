@@ -14,6 +14,7 @@ export default function SolvePage() {
   const { toast } = useToast();
   const titleId = Number(params.id);
   const random = searchParams.get('random') === 'true';
+  const isNewSession = searchParams.get('start') === 'true';
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,14 +24,23 @@ export default function SolvePage() {
 
   useEffect(() => {
     loadQuestions();
-    // resultページから戻ってきた場合、次の問題インデックスを復元
+
     if (typeof window !== 'undefined') {
-      const savedIndex = sessionStorage.getItem('currentQuestionIndex');
-      if (savedIndex) {
-        setCurrentIndex(Number(savedIndex));
+      // 新規セッション開始の場合、すべてのデータをクリア
+      if (isNewSession) {
+        sessionStorage.setItem('quizAnswers', JSON.stringify([]));
         sessionStorage.removeItem('currentQuestionIndex');
+        setCurrentIndex(0);
+      } else {
+        // resultページから戻ってきた場合、次の問題インデックスを復元
+        const savedIndex = sessionStorage.getItem('currentQuestionIndex');
+        if (savedIndex) {
+          setCurrentIndex(Number(savedIndex));
+          sessionStorage.removeItem('currentQuestionIndex');
+        }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadQuestions = async () => {
@@ -93,6 +103,34 @@ export default function SolvePage() {
 
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('quizResult', JSON.stringify(resultData));
+
+        // 回答履歴に追加または更新
+        const answersStr = sessionStorage.getItem('quizAnswers') || '[]';
+        const answers = JSON.parse(answersStr);
+
+        // 同じ問題の既存の回答を検索
+        const existingIndex = answers.findIndex(
+          (a: any) => a.questionId === currentQuestion.id
+        );
+
+        const newAnswer = {
+          questionId: currentQuestion.id,
+          question: currentQuestion,
+          selectedChoiceIds: selectedChoices,
+          isCorrect: result.is_correct,
+          correctChoiceIds: result.correct_choice_ids,
+          explanation: result.explanation,
+        };
+
+        if (existingIndex >= 0) {
+          // 既存の回答を更新
+          answers[existingIndex] = newAnswer;
+        } else {
+          // 新しい回答を追加
+          answers.push(newAnswer);
+        }
+
+        sessionStorage.setItem('quizAnswers', JSON.stringify(answers));
       }
 
       // 結果ページへ遷移

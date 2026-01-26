@@ -1,4 +1,4 @@
-# Ping-T Clone Backend
+# QuizHub　Backend
 
 Ping-Tのような問題集・クイズサービスのバックエンドAPI（Django + DRF）
 
